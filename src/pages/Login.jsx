@@ -37,7 +37,7 @@ const Login = () => {
               <h1 className="text-3xl font-bold">Sign In</h1>
 
               {error ? <p className="p-3 bg-red-400 my-2">{error}</p> : null}
-              <form 
+              <form
                 onSubmit={handleSubmit}
                 className="w-full flex flex-col py-4"
               >
@@ -57,7 +57,7 @@ const Login = () => {
                   autoComplete="current-password"
                 />
                 <button className="bg-red-600 py-3 my-3 rounded font-bold">
-                  Sign Up
+                  Sign In
                 </button>
 
                 <div className="flex justify-between items-center text-sm text-gray-600">
