@@ -5,6 +5,11 @@ import Youtube from "react-youtube";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { MdClose } from "react-icons/md";
 
+import { FaPlus, FaCheck } from "react-icons/fa";
+import { UserAuth } from "../context/AuthContext";
+import { db } from "../firebase";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+
 import Movie from "./Movie";
 import { key } from "../Request";
 
@@ -93,12 +98,36 @@ const Row = ({ title, fetchURL, rowId }) => {
 };
 
 function MovieInfoPopup({ children, movieInfo, onHandleClose }) {
+  const [watched, setWatched] = useState(false);
+  const [list, setList] = useState(false);
+  const { user } = UserAuth();
+
+  const movieID = doc(db, "users", `${user?.email}`);
+
+  console.log(movieInfo);
+
+  const saveShow = async () => {
+    if (user?.email) {
+      setWatched(!watched);
+      setList(true);
+      await updateDoc(movieID, {
+        saveShows: arrayUnion({
+          id: movieInfo.id,
+          title: movieInfo.title,
+          img: movieInfo.backdrop_path,
+        }),
+      });
+    } else {
+      alert("Please Log in to save a movie");
+    }
+  };
+
   return (
     <>
       <div className="bg-black opacity-95 fixed top-0 left-0 w-full h-full z-[130]"></div>
       <div className="bg-transparent fixed top-0 left-0 w-full z-[150]">
         <div className="bg-neutral-900 rounded-sm mx-auto max-w-3xl h-screen w-full shadow-lg">
-          <div className="w-full flex justify-center mt-14  relative">
+          <div className="w-full flex justify-center mt-3  relative">
             <div className="absolute top-0 left-0 w-full h-[390px] bg-gradient-to-b from-transparent to-black"></div>
             <button
               className="absolute top-0 right-0 text-white"
@@ -118,6 +147,15 @@ function MovieInfoPopup({ children, movieInfo, onHandleClose }) {
               <p>⭐ {movieInfo.vote_average}</p>
             </div>
             <p className="text-sm text-stone-300">{movieInfo.overview}</p>
+
+            <p onClick={saveShow}>
+              {watched ? (
+                <FaCheck size={30} className="mt-2 text-white cursor-pointer" />
+              ) : (
+                <FaPlus size={30} className="mt-2  text-white cursor-pointer" />
+              )}
+            </p>
+            <p className="text-white mt-2">My List</p>
           </div>
         </div>
       </div>
